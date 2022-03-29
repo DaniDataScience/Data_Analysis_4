@@ -1,0 +1,300 @@
+---
+title: "Assignment_2"
+output: html_document
+date: '2022-03-28'
+---
+
+## Project description
+
+I intend to examine to what extent does economic activity cause CO2 emission. I will measure economic activity through GDP, and I will use per capita values for GDP and emissions as well (a confounder)
+
+## Downloading and describing data
+
+I have downloaded the following time series data for all countries from 1992-2018 from the World Bank WDI section for all countries:
+
+- GDP per capita data (constant 2015 USD)
+- CO2 emission in metric tonnes per capita 
+
+
+I did the following data cleaning and feature engineering steps:
+
+- I set the NA values to be shown as "NA" instead of "..". 
+- I simplified column names
+- I excluded grouped observations (e.g. EU, MENA)
+- I dropped rows with missing data, and to get a balanced sample, I dropped rows with countries that did not have data for all 27 years
+- I set data type to years format
+- I created the log of GDP and CO2, and the lag variables (2 and 6)
+- Taking the log of GDP and CO2, I also fixed the originally skewed distribution
+
+
+In the end I ended up with 44010 observations for 163 countries, each country having 27 yearly data on GDP and CO2 per capita, from 1992 to 2018. This is a balanced panel data.
+
+```{r setup, include=FALSE, message=FALSE, warning=FALSE}
+# loading data
+rm(list=ls())
+library(tidyverse)
+library(huxtable)
+library(estimatr)
+library(dplyr)
+library(data.table)
+library(lubridate)
+library(modelsummary)
+library(ggplot2)
+library(kableExtra)
+
+df_raw <- read_csv("./input/WDI_data_raw_v2.csv", na=c(".."))
+df <- df_raw
+df <- data.table(df)
+
+# cleaning row name
+colnames(df) <- c("Year", "Time_code", "Country","Country_code","GDP_PC", "CO2_PC")
+
+# missing values
+  # where do we have missing variables?
+  to_filter <- sapply(df, function(x) sum(is.na(x)))
+  to_filter[to_filter > 0]
+  # dropping missing values
+  df <- df %>% drop_na()
+  # checking countries with missing years due to dropping NA
+  df %>% group_by(Country_code) %>% summarise(n=n())
+  # getting a list of countries where we do not have all 27 years
+  countries <- c((df %>% group_by(Country_code) %>% summarise(n=n()) %>% filter(n==27))[1])
+  # filtering original dataset whit countries that have values for all 27 years
+  df <- df[df$Country_code %in% countries$Country_code]
+  # checking if successful (if zero, then yes)
+  sum((df %>% group_by(Country_code) %>% summarise(n=n()))$n != 27)
+  # turning country code and year into factor
+  df <- df %>% mutate(Country_code = factor(Country_code))
+  df <- df %>% mutate(Year = factor(Year))
+  # drop specific values taht are grouped observations
+  drop_id <- c("AFE","AFW", "CEB","EAR", "EAS", "EAP","TEA", "EMU","ECS","ECA", "TEC", "EUU", "FCS", "HPC", "LTE", "LCN", "LAC", "TLA", "LDC", "LMY", "LMC", "LIC","MEA", "MNA", "TMN", "MIC", "OED", "PSS", "PST", "PRE", "SAS", "TSA", "SSF", "SSA", "TSS", "UMC", "WLD", "CSS", "HIC", "IBD", "IBT", "IDB", "IDX", "IDA")
+  df <- df %>% filter( !grepl( paste( drop_id , collapse="|"), df$Country_code ) ) 
+  
+  df %>% group_by(Country, Country_code) %>% summarise(n())
+  
+# data types
+    # creating year type
+   df$Year <- as.Date(as.character(df$Year), format = "%Y")
+   df$Year <- year(df$Year)
+   
+   # creating logs
+   df <- df %>%
+     mutate(ln_GDPPC = log(GDP_PC),
+            ln_CO2PC=log(CO2_PC))
+  
+    # lagged variables
+    df <- df %>%
+      arrange(Country_code, Year) %>%
+      group_by(Country_code) %>%
+      mutate(
+        d1ln_GDPPC = ln_GDPPC - lag(ln_GDPPC, n=1L),
+        d1ln_CO2PC = ln_CO2PC - lag(ln_CO2PC, n=1L)
+        ) %>%
+      ungroup()
+
+# Check the descriptive
+datasummary( GDP_PC + CO2_PC ~ Mean + Median + SD + Min + Max , data = df )
+```
+
+
+
+### Exploratory analysis
+
+We can see that there is a clear trend for both GDP per capita and CO2 emissions per capita increasing over time (for simplicity, I only showed the top10 countries)
+
+```{r, echo=FALSE, message=FALSE, warning=FALSE, out.width="50%", fig.cap="Development of GDP per capita in top10 countries"}
+# creating some plots
+top_countries <- c((df %>% group_by(Country) %>% summarise(sum=sum(GDP_PC)) %>% arrange(-sum)))[1]
+
+p1 <- ggplot(df[df$Country %in% top_countries$Country[0:10],] ,
+       aes(Year, GDP_PC, group = Country, colour = Country)) + 
+  geom_point() + geom_line(size = 1) + theme_bw() + ylab("GDP per cappita (USD)") + theme_light()
+
+p2 <- ggplot(df[df$Country %in% top_countries$Country[0:10],] ,
+       aes(Year, CO2_PC, group = Country, colour = Country)) + 
+  geom_point() + geom_line(size = 1) + theme_bw() + ylab("CO2 emission per capita(in tonnes)") + theme_light()
+
+p1
+p2
+
+```
+
+Plotting the ln of GDP and CO2 per capita against Year, we can see that they are linear, and are almost paralell.
+
+```{r, echo=FALSE, warning=FALSE, message=FALSE}
+temp <- df %>% 
+  group_by(Year) %>% 
+  summarise(avg_gdp = mean(ln_GDPPC, na.rm = T), avg_CO2 = mean(ln_CO2PC, na.rm=T)) 
+ggplot(temp) +
+  geom_point(aes(x = Year, y = avg_gdp), color="red") +
+  geom_point(aes(x = Year, y = avg_CO2)) +
+  theme_light() +
+  labs(title="GDP per capita (in red) and CO2 emissions per capita (black) by year", y="Year") 
+```
+
+## Regressions
+
+In the following chapter I will interpret the results of 7 models I built.
+
+### Cross-sectional OLS regressions for chosen years
+
+First of all I created a basic cross-section OLS models for 1994 and for 2016, with the following formula: ln_CO2PC ~ ln_GDPPC
+
+The results shows that, on average, if the CO2 per capita is higher by 1% the GDP per capita is higher by 0.99% in 1994, and 0.90% in 2016.
+
+```{r, echo=FALSE, message=FALSE, warning=FALSE}
+ols_formula <- formula(ln_CO2PC ~ ln_GDPPC)
+
+# For 2016
+OLS_2016 <- lm_robust(ols_formula, data = filter(df, Year=="2016"))
+OLS_1994 <- lm_robust(ols_formula, data = filter(df, Year=="1994"))
+
+huxreg("Cross-sec 1994"=OLS_1994, "Cross_sec 2016" =OLS_2016, 
+  statistics = c(N = "nobs", R2 = "r.squared"), 
+  coefs = c("ln GDP per capita"= "ln_GDPPC" ))
+
+```
+
+I see a declining trend between 1994 and 2016 in the coefficient, so I did further calculations.
+
+By calculating the coefficients for all years and plotting it on a scatter plot, we can see that the beta coefficient is smaller and smaller after 2010. Using domain knowledge makes me form a hypothesis in the 20th century and early 2000s, high industrial production caused both high GDP per capita and high CO2 emissions, however, the trend  is that developed countries increase their GDP per capita and decrease their emissions. This can be explained with one the one had a conscious effort since the Paris agreement to lower emissions, and due to the service sector contributing mor and more to GDP growth, while production is outsourced to developping countries. 
+
+```{r, echo=FALSE, message=FALSE, warning=FALSE}
+beta <- c()
+year <- c()
+for(i in seq(1992,2018,1)){
+  beta_i = fixest::feols(ols_formula, data = filter(df, Year==as.character(i)), vcov = 'iid' )
+  beta = c(beta, beta_i$coefficients[2]) 
+  year = c(year, i)
+  OLS_results <- data.frame("year"=year, "coeff"=beta)
+}
+
+ggplot(OLS_results, aes(x=year, y=beta)) + geom_point() + labs(x = "Year",y = "Beta coefficient") +
+theme_bw()
+
+```
+
+### First difference regression
+
+After the OLS models I built 3 FD models:
+
+- d1ln_CO2PC ~ d1ln_GDPPC + Year
+- d1ln_CO2PC ~ d1ln_GDPPC + 2 lags + Year
+- d1ln_CO2PC ~ d1ln_GDPPC + 6 lags + Year
+
+Lags take care of delayed effects, while  yearly dummies  take care of aggregate trends that are non linear.
+
+The results are the following:
+
+- For the 1st model, on average, CO2 emission per capita tends to increase by 0.51% more when GDP per capita increases by 1% more
+- For the 2nd model, on average, CO2 emission per capita tends to increase by 0.43% more when GDP per capita increases by 1% more. The cumulative coeff. is 0.121, meaning two years GPD change is 0.121% additional change in CO2 emission per capita
+- For the 3rd model, on average, CO2 emission per capita tends to increase by 0.44% more when GDP per capita increases by 1% more. The cumulative coeff. is 0.28, meaning two years GPD change is 0.28%% additional change in CO2 emission per capita
+- The coefficient is significant at 99% in all 3 models, and including lags does not change the immediate effect significantly between 2nd and 3rd model, so 2 lags are enough
+
+```{r echo=F, message=F, warning=F}
+
+FD_1 <- lm_robust(d1ln_CO2PC ~ d1ln_GDPPC + Year,
+                   data = df, 
+                   se_type = "stata", 
+                   clusters = Country)
+
+
+FD_2 <- lm_robust(d1ln_CO2PC ~ 
+                    lag(d1ln_GDPPC,0) + 
+                    lag(d1ln_GDPPC,1) + 
+                    lag(d1ln_GDPPC,2) + 
+                    Year,
+                     data = df, 
+                     se_type = "stata", 
+                     clusters = Country
+                  )
+
+FD_3 <- lm_robust(d1ln_CO2PC ~ 
+                    lag(d1ln_GDPPC,0) + 
+                    lag(d1ln_GDPPC,1) + 
+                    lag(d1ln_GDPPC,2) + 
+                    lag(d1ln_GDPPC,3) + 
+                    lag(d1ln_GDPPC,4) + 
+                    lag(d1ln_GDPPC,5) + 
+                    lag(d1ln_GDPPC,6) +
+                    Year,
+                  data = df, 
+                  se_type = "stata", 
+                  clusters = Country
+)
+
+huxreg("FD, no lags"=FD_1, "FD, 2 lags"=FD_2, "FD, 6 lags"=FD_3,
+  statistics = c(N = "nobs", R2 = "r.squared"), 
+  coefs = c("d(ln GDP per capita)" = "d1ln_GDPPC",
+            "d(ln GDP per capita)"="lag(d1ln_GDPPC, 0)",
+            "d1ln_GDPPC lag1"="lag(d1ln_GDPPC, 1)",
+            "d1ln_GDPPC lag2"="lag(d1ln_GDPPC, 2)",
+            "d1ln_GDPPC lag3"="lag(d1ln_GDPPC, 3)",
+            "d1ln_GDPPC lag4"="lag(d1ln_GDPPC, 4)",
+            "d1ln_GDPPC lag5"="lag(d1ln_GDPPC, 5)",
+            "d1ln_GDPPC lag6"="lag(d1ln_GDPPC, 6)",
+            "Constant"= "(Intercept)" ))
+
+```
+
+### Fixed effects model
+
+For FE model, I used the following formula: ln_CO2PC ~ ln_GDPPC + Year
+
+The coefficient shows that when GDP per capita is 1% higher compared to its average value in a given country, the CO2 emission per capita are, on average, 0.55% higher than its average value within that given country.
+
+```{r, echo=FALSE, message=FALSE}
+FE_1 <- lm_robust(ln_CO2PC ~ ln_GDPPC + Year,
+                    data = df, 
+                    se_type = "stata", 
+                    fixed_effect =  ~ Country,
+                    clusters = Country)
+huxreg("FE"=FE_1, 
+  statistics = c(N = "nobs", within_R2 = "adj.r.squared"), 
+  coefs = c("ln GDP per capita"= "ln_GDPPC" ))
+```
+
+### Long difference model 
+
+I made a a long difference model, using log of GPD per capita and log of CO2 emission per capita between 1992 and 2018, and ignoring the rest.
+
+The coefficient in this case means that on a long term we expect CO2 emission per capita to increase by 0.75% more when GDP per capita increases by 1% more.
+
+```{r, echo=FALSE, message=FALSE, warning=FALSE}
+df_long <- df[df$Year %in% c(1992,2018),]
+df_long <- df_long %>% 
+  group_by(Country) %>% 
+  mutate(d1ln_GDPPC = ln_GDPPC-lag(ln_GDPPC),
+         d1ln_CO2PC = ln_CO2PC - lag(ln_CO2PC)) %>% 
+  ungroup()
+
+Long_reg <- lm(d1ln_CO2PC ~ d1ln_GDPPC, data = df_long)
+huxreg("LD"=Long_reg, 
+  statistics = c(N = "nobs", R2 = "r.squared"), 
+  coefs = c("LD ln GDP per capita"= "d1ln_GDPPC",
+            "Intercept" = "(Intercept)"))
+```
+
+### Summary
+
+I built OLS model, 3 FE models and 1 FD and 1 long difference model, using GDP and CO2 emission per capita data from World Bank. A first estimate is that in case of an additional 1% change in GPD per capita we can expect CO2 emission to increase with 0.5% more. To claim causality this is not enough, we would need to think of this problem in more details.
+
+```{r, echo=FALSE, message=FALSE, warning=FALSE}
+
+huxreg("FD, no lags"=FD_1, "FD, 2 lags"=FD_2, "FD, 6 lags"=FD_3, "FE"=FE_1, "LD 1992-'18"=Long_reg,
+  statistics = c(N = "nobs", R2 = "r.squared"), 
+  coefs = c("d(ln GDP per capita)" = "d1ln_GDPPC",
+            "d(ln GDP per capita)"="lag(d1ln_GDPPC, 0)",
+            "ln GDP per capita"= "ln_GDPPC",
+            "LD ln GDP per capita"= "d1ln_GDPPC"))
+
+```
+
+### Potential mechanisms
+
+Potential mechanisms include ways for causality to take place: effects through which one variable affects the other. In this case GDP per capita can effect CO2 emission: One example, as discussed above, when more goods are produced, GDP is higher, and emissions are also higher. Another example is that win countries where GDP is higher, people have more money to consume things that directly generate CO2 emissions (not through production but through usage). E.g. using the car, or utrning on the lights, or using AC (given that power is generated from fossils). However, more services on the other hand are  can lead to more travelling, more electricity needed, etc. which all can lead to more CO2 emission.
+
+### Think of a potential confounder
+A potential confounder would be weahter the country joined the Paris agreement to decrease emissions or not. This confounder can further be refined by dividing countries into front runners of green energy such as Germany, or followers such as Hungary. 
+
+Another potential confounder is the ratio of industrial output within the GDP, and differentiate mature economies with a large services sector (e.g. Luxembourg with no industry, of California as an IT hub) from production based industries such as China. 
