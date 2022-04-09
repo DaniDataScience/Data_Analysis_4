@@ -1,21 +1,184 @@
 ---
-title: "Term_Project"
+title: "DA4 Term Project - Examination of potential causa relationship between wealth and life expectancy globally"
 output: html_document
 date: '2022-04-09'
 authors: Bodnár Andrág, Gyebnár Dániel
 ---
 
-### Introduction
+### 1. Introduction
 
-Goal of the analysis
+Goal of the analysis, research question
 
-### Getting the data
+Task description from moodle:
+"Question. Explicit statement of the question. Why it is important (literature may help here but not compulsory). You may discuss the policy relevance of the question using your country as an example. (E.g., Should policy change in my country to achieve some outcome?) Eventually, you have to answer the question in an explicit way, and, if necessary, you have to qualify that answer. (10%)"
 
-Data used
+```{r setup, echo=FALSE, message=FALSE, warning=FALSE}
+rm(list=ls())
+library(tidyverse)
+library(dplyr)
+library(modelsummary)
+library(huxtable)
+library(estimatr)
+library(data.table)
+library(kableExtra)
+library(ggplot2)
+#install.packages("naniar")
+library(naniar)
+```
 
-### Data cleaning
+#### Getting the data
 
-cleaning dataset, creating a balanced df
+Exact source, sample selection
 
-### Exploring the data
+```{r loading data, echo=FALSE, message=FALSE, warning=FALSE}
+data_raw_2 <- read_csv("./raw/data_raw_2.csv")
+```
 
+
+### 2. Data preparation
+
+Task description from moodle:
+Data. treating missing values, extreme valued observations (if any), weighting or not weighting, logs or levels. Feature engineering / choice of variables (logs, binary, transformations to achieve stationarity etc.) Argue for your choices. (20%)
+
+#### Data cleaning
+
+```{r cleaning data, echo=FALSE, message=FALSE, warning=FALSE}
+df <- data_raw_2
+
+# drop specific values that are grouped observations
+  drop_id <- c("ARB", "AFE","AFW", "CEB","EAR", "EAS", "EAP","TEA", "EMU","ECS","ECA", "TEC", "EUU", "FCS", "HPC", "LTE", "LCN", "LAC", "TLA", "LDC", "LMY", "LMC", "LIC","MEA", "MNA", "TMN", "MIC", "OED", "PSS", "PST", "PRE", "SAS", "TSA", "SSF", "SSA", "TSS", "UMC", "WLD", "CSS", "HIC", "IBD", "IBT", "IDB", "IDX", "IDA")
+  df <- df %>% filter( !grepl( paste( drop_id , collapse="|"), df$CC ))
+  rm(drop_id)
+
+# missing values
+  # education expenditure and health expenditure is missing for a lot of columns
+  to_filter <- sapply(df, function(x) sum(is.na(x)))
+  to_filter[to_filter > 0]
+  # removing rows where CC has missing (grouped countries)
+  df <- df %>% drop_na(CC)
+  rm(to_filter)
+  # health expenditure data is not available from before 2000 at a large part of the data
+  temp <- select(df, c("year","GDPPC", "Life_exp","Health_exp","Urban_pop","Edu_exp"))
+  temp <- temp %>% mutate(year = factor(year))
+  gg_miss_fct(x = temp,
+            fct = year)
+  rm(temp)
+  # drop missing rows from before 2000 due to missing data
+  df <- df %>% filter(year >=2000)
+  
+  # 183 countries have missing educational expenditure data for the 2000-2018 period
+  # I will have to drop this variable, too many are missing
+  missing_per_country <- tibble(
+    gdp = df %>% group_by(country) %>% summarise(gdp=sum(GDPPC)) %>% is.na() %>% sum(),
+    life = df %>% group_by(country) %>% summarise(life=sum(Life_exp)) %>% is.na() %>% sum(),
+    urban = df %>% group_by(country) %>% summarise(urban=sum(Urban_pop)) %>% is.na() %>% sum(),
+    health = df %>% group_by(country) %>% summarise(health=sum(Health_exp)) %>% is.na() %>% sum(),
+    edu = df %>% group_by(country) %>% summarise(edu=sum(Edu_exp)) %>% is.na() %>% sum())
+  df <- df %>% select(-c("Edu_exp"))
+  # checking missing again
+  to_filter <- sapply(df, function(x) sum(is.na(x)))
+  to_filter[to_filter > 0]
+  rm(to_filter)
+```
+
+#### Creating balanced data
+
+```{r balancing, echo=FALSE, message=FALSE, warning=FALSE}
+
+# flagging unbalanced
+data_panel <- df %>%
+  filter(!(is.na(GDPPC) | is.na(Life_exp) | is.na(Health_exp) | is.na(Urban_pop))) %>%
+  group_by(country) %>%
+  mutate(balanced = min(year) == 2000 & max(year) == 2018& length(unique(year)) == 19) %>%
+  ungroup()
+# there are 12 countries we would have to drop, mostly not significant countries
+data_panel %>% group_by(country) %>% summarise(n=sum(balanced)) %>% filter(n==0)
+
+# dropping unbalanced
+df_balanced <- data_panel %>%
+  filter(balanced == TRUE)
+  # checking missing again - there are no missing
+  to_filter <- sapply(df_balanced, function(x) sum(is.na(x)))
+  to_filter[to_filter > 0]
+  rm(to_filter)
+
+rm(list=ls()[! ls() %in% c("df_balanced")])
+
+# we have 170 countries in our balanced dataset
+df_balanced %>% group_by(country) %>% summarize(n=n())
+df_balanced %>% select(-c("balanced"))
+```
+
+#### Exploring the data
+
+```{r}
+df_balanced %>%
+  keep(is.numeric) %>% 
+  gather() %>% 
+  ggplot(aes(value)) +
+  facet_wrap(~key, scales = "free") +
+  geom_histogram(fill= "darkblue")+
+  theme_light()
+
+df_balanced %>% 
+  group_by(year) %>% 
+  summarise(avg_emm = mean(Life_exp)) %>% 
+  ggplot() +
+  geom_line(aes(x = year, y = avg_emm), color = "red") +
+  theme_light() +
+  labs(title="Average life expectency by year", y="Life expectency")
+df_balanced %>% 
+  group_by(year) %>% 
+  summarise(avg_gdp = mean(GDPPC)) %>% 
+  ggplot(aes(x = year, y = avg_gdp)) +
+  geom_line(color = "deeppink4") +
+  theme_light() +
+  labs(title="GDP per capita by year", y="GDP (USD)") 
+  
+```
+
+#### Target variable and feature engineering
+
+```{r feature engineering, echo=FALSE, warning=FALSE, message=FALSE}
+# turning country code and year into factor
+df_balanced <- df_balanced %>% mutate(CC = factor(CC))
+df_balanced <- df_balanced %>% mutate(year = factor(year))
+
+# creating log variables
+df_balanced <- df_balanced %>%
+  arrange(country, year) %>%
+  group_by(country) %>%
+  mutate(
+    ln_gdp = log(GDPPC),
+    ln_life_exp = log(Life_exp),
+    ln_health_exp = log(Health_exp),
+    ln_urban = log(Urban_pop)
+  ) %>%
+  ungroup()
+```
+
+
+### 3. Identification strategy
+
+Task description from moodle:
+Identification strategy. Decide upon your main regression that you hope would identify the effect you are after (or gets closest to that affect or the association you aim to measure). Explain what you are going to estimate and why. (10%) 
+
+#### Model 1
+
+#### Model 2
+
+#### ...
+
+#### Model selection
+
+### 4. Discussion of results
+
+#### Key result summary
+
+#### Limitations
+
+#### Heterogenity
+
+####  Robustness
+
+### 4. Summary
