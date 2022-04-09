@@ -1,0 +1,21 @@
+---
+title: "Term_Project"
+output: html_document
+date: '2022-04-09'
+authors: Bodnár Andrág, Gyebnár Dániel
+---
+
+### Introduction
+
+Goal of the analysis
+
+### Getting the data
+
+Data used
+
+### Data cleaning
+
+cleaning dataset, creating a balanced df
+
+### Exploring the data
+
