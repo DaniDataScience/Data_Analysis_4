@@ -28,17 +28,17 @@ A technical note: the code and data can also be found in [this Github repo](http
 ```{r data load, echo=FALSE}
 # Load data
 
-wide_bin_6_years <- read_csv("bin_wide_to14.csv")
-wide_bin_4_years <- read_csv("bin_wide_to16.csv")
-diff_in_diff_6_years_after <- read_csv("bin_diff_in_diff_to14.csv")
-diff_in_diff_4_years_after <- read_csv("bin_diff_in_diff_to16.csv")
-fd_6_year_avg_6_after <- read_csv("bin_long_fd_to14.csv")
-fd_6_year_avg_4_after <- read_csv("bin_long_fd_to16.csv")
+wide_bin_6_years <- read_csv("https://raw.githubusercontent.com/DaniDataScience/Data_Analysis_4/main/Term_Project/data/clean/bin_wide_to14.csv")
+wide_bin_4_years <- read_csv("https://raw.githubusercontent.com/DaniDataScience/Data_Analysis_4/main/Term_Project/data/clean/bin_wide_to16.csv")
+diff_in_diff_6_years_after <- read_csv("https://raw.githubusercontent.com/DaniDataScience/Data_Analysis_4/main/Term_Project/data/clean/bin_diff_in_diff_to14.csv")
+diff_in_diff_4_years_after <- read_csv("https://raw.githubusercontent.com/DaniDataScience/Data_Analysis_4/main/Term_Project/data/clean/bin_diff_in_diff_to16.csv")
+fd_6_year_avg_6_after <- read_csv("https://raw.githubusercontent.com/DaniDataScience/Data_Analysis_4/main/Term_Project/data/clean/bin_long_fd_to14.csv")
+fd_6_year_avg_4_after <- read_csv("https://raw.githubusercontent.com/DaniDataScience/Data_Analysis_4/main/Term_Project/data/clean/bin_long_fd_to16.csv")
 
-quant_wide <- read_csv("quant_wide.csv")
-quant_long <- read_csv("quant_long.csv")
+quant_wide <- read_csv("https://raw.githubusercontent.com/DaniDataScience/Data_Analysis_4/main/Term_Project/data/clean/quant_wide.csv")
+quant_long <- read_csv("https://raw.githubusercontent.com/DaniDataScience/Data_Analysis_4/main/Term_Project/data/clean/quant_long.csv")
 
-control_vars <- read_csv("control_vars.csv")
+control_vars <- read_csv("https://raw.githubusercontent.com/DaniDataScience/Data_Analysis_4/main/Term_Project/data/clean/control_vars.csv")
 
 ```
 ## 2. Binary Intervention
