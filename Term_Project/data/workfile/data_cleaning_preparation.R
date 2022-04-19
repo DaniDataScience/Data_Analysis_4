@@ -1,19 +1,19 @@
-# setwd("../../CEU/Study/da4/final_proj/Smoke_Cancer/")
+# Lines for saving the results to csv have been commented out!
 library(tidyverse)
 library(data.table)
-who_2009 <- read_csv("WHO_global_tobacco_2009.csv")
-who_2011 <- read_csv("WHO_global_tobacco_2011.csv")
-who_2013 <- read_csv("WHO_global_tobacco_2013.csv")
-who_2015 <- read_csv("WHO_global_tobacco_2015.csv")
-who_2017 <- read_csv("WHO_global_tobacco_2017.csv")
-who_2019 <- read_csv("WHO_global_tobacco_2019.csv")
-who_2021 <- read_csv("WHO_global_tobacco_2021.csv")
+who_2009 <- read_csv("https://raw.githubusercontent.com/DaniDataScience/Data_Analysis_4/main/Term_Project/data/raw/WHO_global_tobacco_2009.csv")
+who_2011 <- read_csv("https://raw.githubusercontent.com/DaniDataScience/Data_Analysis_4/main/Term_Project/data/raw/WHO_global_tobacco_2011.csv")
+who_2013 <- read_csv("https://raw.githubusercontent.com/DaniDataScience/Data_Analysis_4/main/Term_Project/data/raw/WHO_global_tobacco_2013.csv")
+who_2015 <- read_csv("https://raw.githubusercontent.com/DaniDataScience/Data_Analysis_4/main/Term_Project/data/raw/WHO_global_tobacco_2015.csv")
+who_2017 <- read_csv("https://raw.githubusercontent.com/DaniDataScience/Data_Analysis_4/main/Term_Project/data/raw/WHO_global_tobacco_2017.csv")
+who_2019 <- read_csv("https://raw.githubusercontent.com/DaniDataScience/Data_Analysis_4/main/Term_Project/data/raw/WHO_global_tobacco_2019.csv")
+who_2021 <- read_csv("https://raw.githubusercontent.com/DaniDataScience/Data_Analysis_4/main/Term_Project/data/raw/WHO_global_tobacco_2021.csv")
 cancer_cases_fem <- read_csv("https://raw.githubusercontent.com/open-numbers/ddf--gapminder--systema_globalis/master/countries-etc-datapoints/ddf--datapoints--lung_cancer_number_of_new_female_cases--by--geo--time.csv")
 cancer_cases_mal <- read_csv("https://raw.githubusercontent.com/open-numbers/ddf--gapminder--systema_globalis/master/countries-etc-datapoints/ddf--datapoints--lung_cancer_number_of_new_male_cases--by--geo--time.csv")
 cancer_full_c_names <- read_csv("https://raw.githubusercontent.com/open-numbers/ddf--gapminder--systema_globalis/master/ddf--entities--geo--country.csv")
-wb_pop <- read_csv("world_bank_pop.csv")
-cancer_2017_19 <- read_csv("195_cont_2017_19_cancer.csv")
-cancer_2020 <- read_csv("185_cont_2020.csv")
+wb_pop <- read_csv("https://raw.githubusercontent.com/DaniDataScience/Data_Analysis_4/main/Term_Project/data/raw/world_bank_pop.csv")
+cancer_2017_19 <- read_csv("https://raw.githubusercontent.com/DaniDataScience/Data_Analysis_4/main/Term_Project/data/raw/195_cont_2017_19_cancer.csv")
+cancer_2020 <- read_csv("https://raw.githubusercontent.com/DaniDataScience/Data_Analysis_4/main/Term_Project/data/raw/185_cont_2020.csv")
 
 # Compare country names
 
@@ -347,7 +347,7 @@ merged_cancer <- merged_cancer |> filter(!(name %in% missing_pop$name)) |> selec
 
 missing_cont <- unique(t0_table_10_14$COUNTRY)[!(unique(t0_table_10_14$COUNTRY) %in% unique(merged_cancer$name))]
 
-missing_cont_aux <- read_csv("missing_cont_old.csv")
+missing_cont_aux <- read_csv("https://raw.githubusercontent.com/DaniDataScience/Data_Analysis_4/main/Term_Project/data/raw/missing_cont_old.csv")
 
 merged_cancer <- rbind(merged_cancer , missing_cont_aux)
 
@@ -464,8 +464,8 @@ merged_cancer_2014_long_diff <- merged_cancer_2014_long_diff |>
 merged_cancer_2016_long_diff <- merged_cancer_2016_long_diff |> 
   mutate(d_case_per_t = ifelse(year_num == 4, case_per_t - lag(case_per_t,1) , NA))
 
-write_csv(merged_cancer_2014_long_diff ,'bin_diff_in_diff_to14.csv')
-write_csv(merged_cancer_2016_long_diff ,'bin_diff_in_diff_to16.csv')
+# write_csv(merged_cancer_2014_long_diff ,'bin_diff_in_diff_to14.csv')
+# write_csv(merged_cancer_2016_long_diff ,'bin_diff_in_diff_to16.csv')
 
 # For long FD, FE
 # Get lags
@@ -514,8 +514,8 @@ merged_cancer_2016_long <- merged_cancer_2016_long |>
   ) |> filter(year_num == 0) |>  select(name, time , treated , d_over_4_years)
 
 
-write_csv(merged_cancer_2014_long ,'bin_long_fd_to14.csv')
-write_csv(merged_cancer_2016_long ,'bin_long_fd_to16.csv')
+# write_csv(merged_cancer_2014_long ,'bin_long_fd_to14.csv')
+# write_csv(merged_cancer_2016_long ,'bin_long_fd_to16.csv')
 
 # Wide format for year-by-year regression
 merged_cancer_2014_wide <- merged_cancer_2014 |> filter(year_num >= - 20 & year_num <= 6) |> select(-"time")
@@ -533,8 +533,8 @@ names(merged_cancer_2014_wide) <- c(names(merged_cancer_2014_wide)[1:3] ,
 names(merged_cancer_2016_wide) <- c(names(merged_cancer_2016_wide)[1:3] ,
                              gsub("-" , "pre" , names(merged_cancer_2016_wide)[4:length(merged_cancer_2016_wide)]))
 
-write_csv(merged_cancer_2014_wide ,'bin_wide_to14.csv')
-write_csv(merged_cancer_2016_wide ,'bin_wide_to16.csv')
+# write_csv(merged_cancer_2014_wide ,'bin_wide_to14.csv')
+# write_csv(merged_cancer_2016_wide ,'bin_wide_to16.csv')
 
 # Numeric
 
@@ -573,7 +573,7 @@ numeric_int_table <- join_by_year(2016)
 numeric_int_table <- join_by_year(2018)
 numeric_int_table <- join_by_year(2020)
 
-write_csv(numeric_int_table ,'quant_wide.csv')
+# write_csv(numeric_int_table ,'quant_wide.csv')
 
 # Long for FE, FD
 
@@ -649,4 +649,4 @@ numeric_long <- numeric_long |>
 
 numeric_long <- numeric_long |> filter(!is.na(policy_num))
 
-write_csv(numeric_long ,'quant_long.csv')
+# write_csv(numeric_long ,'quant_long.csv')
