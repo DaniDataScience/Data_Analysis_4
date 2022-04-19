@@ -3,6 +3,7 @@ title: "DA Final Assignment - Smoke Free Laws and Lung Cancer"
 author: "A. BOGNAR , D. GYEBNAR"
 date: "4/18/2022"
 output: pdf_document
+urlcolor: blue
 ---
 
 ```{r setup, include=FALSE}
