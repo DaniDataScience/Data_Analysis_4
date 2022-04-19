@@ -1,0 +1,195 @@
+﻿COUNTRY,HEALTH-CARE FACILITIES,EDUCATIONALNoEXCEPT UNIVERSITIES,UNIVERSITIES,GOVERNMENT FACILITIES,INDOOR OFFICES,RESTAURANTS,PUBSNoBARS,PUBLIC TRANSPORT,ALLNoINDOORNoPLACES,"OVERALLNoOFNoONNoENVIRONMENTS ,"
+Afghanistan,Yes,Yes,Yes,No,No,No,No,Yes,Missing,No
+Albania,Yes,Yes,Yes,Yes,Yes,Yes,Yes,Yes,Yes,0
+Algeria,Yes,Yes,No,No,No,No,No,No,Missing,1
+Andorra,No,No,No,No,No,No,No,No,Missing,Missing
+Angola,Yes,No,No,No,No,No,No,No,Missing,No
+AntiguaNoBarbuda,No,No,No,Yes,No,No,No,No,Missing,No
+Argentina,No,No,No,No,No,No,No,No,Missing,Missing
+Armenia,Yes,Yes,Yes,No,No,No,No,No,Missing,3
+Australia,No,No,No,No,No,No,No,No,Missing,Missing
+Austria,No,Yes,Yes,No,No,No,No,No,Missing,5
+Azerbaijan,Yes,Yes,Yes,No,No,No,No,No,Missing,0
+Bahamas,No,No,No,No,No,No,No,No,Missing,Missing
+Bahrain,No,No,No,No,No,No,No,No,Missing,Missing
+Bangladesh,Yes,Yes,No,No,No,No,No,No,Missing,3
+Barbados,Yes,Yes,Yes,Yes,Yes,Yes,Yes,Yes,Yes,Missing
+Belarus,Yes,No,No,No,No,No,No,No,Missing,2
+Belgium,No,No,No,No,No,No,No,No,Missing,Missing
+Belize,No,No,No,No,No,No,No,No,Missing,Missing
+Benin,Yes,Yes,No,Yes,Yes,No,No,No,Missing,6
+Bhutan,Yes,Yes,Yes,Yes,Yes,Yes,Yes,Yes,No,5
+BoliviaNoState of),Yes,Yes,No,Yes,No,No,No,Yes,No,5
+BosniaNoHerzegovina,No,No,No,No,No,No,No,No,No,Missing
+Botswana,No,No,No,No,No,No,No,No,Missing,Missing
+Brazil,No,No,No,No,No,No,No,Yes,Missing,6
+Brunei Darussalam,Yes,Yes,Yes,Yes,No,Yes,Missing,Yes,Missing,5
+Bulgaria,No,No,No,No,No,No,No,No,Missing,Missing
+Burkina Faso,Yes,Yes,Yes,Yes,Yes,Yes,Yes,Yes,Yes,Missing
+Burundi,No,No,No,No,No,No,No,No,Missing,Missing
+Cambodia,No,No,No,No,No,No,No,No,Missing,Missing
+Cameroon,Yes,Yes,No,No,No,No,No,No,Missing,2
+Canada,No,No,No,Yes,No,No,No,No,Missing,10
+Cape Verde,No,No,No,No,No,No,No,Yes,Missing,6
+CentralNoRepublic,No,No,No,No,No,No,No,No,Missing,Missing
+Chad,Yes,Yes,Yes,Yes,Yes,Yes,Yes,Yes,Yes,0
+Chile,Yes,Yes,No,No,No,No,No,Yes,Missing,5
+China,No,No,No,No,No,No,No,Yes,Missing,2
+Colombia,Yes,Yes,Yes,Yes,Yes,Yes,Yes,Yes,Yes,6
+Comoros,Yes,Yes,No,No,No,No,No,Yes,No,3
+Congo,No,No,No,No,No,No,No,No,Missing,Missing
+Cook Islands,No,No,No,Yes,No,No,No,Yes,Missing,5
+Costa Rica,No,Yes,No,No,No,No,No,No,Missing,8
+Côte d'Ivoire,Yes,Yes,No,No,No,No,No,No,Missing,0
+Croatia,Yes,Yes,Yes,No,No,No,No,No,Missing,5
+Cuba,Yes,Yes,Yes,No,No,No,No,Yes,Missing,0
+Cyprus,Yes,Yes,Yes,Yes,Yes,Yes,Yes,No,Missing,8
+Czech Republic,Yes,Yes,Yes,Yes,No,No,No,No,Missing,5
+DemocraticNoRepublicNoKorea,Yes,Yes,No,No,No,No,No,Yes,Missing,No
+DemocraticNoofNoCongo,Yes,Yes,Yes,No,No,No,No,Yes,Missing,5
+Denmark,No,No,No,No,No,No,No,No,Missing,Missing
+Djibouti,Yes,Yes,Yes,Yes,Yes,No,No,Yes,Yes,No
+Dominica,No,No,No,No,No,No,No,No,Missing,Missing
+Dominican Republic,No,Yes,Yes,No,No,No,No,No,Missing,8
+Ecuador,Yes,Yes,Yes,Yes,No,Yes,No,No,Missing,5
+Egypt,Yes,Yes,Yes,Yes,Yes,No,No,Yes,Missing,2
+El Salvador,Yes,No,No,Yes,No,No,No,Yes,Missing,1
+Equatorial Guinea,Yes,Yes,Yes,No,No,No,No,No,Missing,No
+Eritrea,No,No,No,No,No,No,No,No,Missing,Missing
+Estonia,No,Yes,No,No,No,No,No,No,Missing,6
+Ethiopia,No,No,No,No,No,No,No,No,Missing,Missing
+Fiji,Yes,No,No,No,No,No,No,No,Missing,No
+Finland,No,Yes,No,No,No,No,No,No,Missing,10
+France,Yes,Yes,Yes,No,No,No,No,Yes,No,No
+Gabon,No,No,No,No,No,No,No,No,Missing,Missing
+Gambia,No,No,No,No,No,No,No,No,Missing,Missing
+Georgia,Yes,Yes,Yes,No,No,No,No,No,Missing,No
+Germany,No,No,No,Yes,No,No,No,Yes,Missing,8
+Ghana,No,No,No,No,No,No,No,No,Missing,Missing
+Greece,Yes,Yes,Yes,Yes,Yes,Yes,Yes,Yes,No,5
+Grenada,No,No,No,No,No,No,No,No,Missing,Missing
+Guatemala,Yes,Yes,Yes,Yes,Yes,Yes,Yes,Yes,No,5
+Guinea,Yes,Yes,Yes,Yes,No,Yes,No,Yes,Missing,3
+Guinea-Bissau,No,No,No,No,No,No,No,No,Missing,Missing
+Guyana,Yes,Yes,Yes,No,No,No,No,No,Missing,2
+Haiti,No,No,No,No,No,No,No,No,Missing,Missing
+Honduras,Yes,Yes,Yes,Yes,Yes,Yes,Yes,Yes,Yes,Missing
+Hungary,No,No,No,No,No,No,No,No,Missing,Missing
+Iceland,Yes,Yes,No,No,No,No,No,Yes,Missing,10
+India,Yes,Yes,Yes,Yes,Yes,No,No,Yes,Missing,5
+Indonesia,Yes,Yes,Yes,No,No,No,No,No,Missing,1
+IranNoRepublic of),Yes,Yes,Yes,Yes,Yes,Yes,Missing,Yes,Yes,8
+Iraq,No,No,No,No,No,No,No,No,Missing,Missing
+Ireland,Yes,Yes,Yes,Yes,Yes,Yes,Yes,Yes,Yes,10
+Israel,Yes,No,No,No,No,No,No,No,Missing,8
+Italy,No,No,No,No,No,No,No,No,No,Missing
+Jamaica,No,No,No,No,No,No,No,No,Missing,Missing
+Japan,No,No,No,No,No,No,No,No,Missing,Missing
+Jordan,Yes,Yes,Yes,Yes,No,No,No,Yes,Missing,7
+Kazakhstan,Yes,Yes,No,Yes,Yes,No,Yes,No,Missing,4
+Kenya,No,No,No,No,No,No,No,No,Missing,Missing
+Kiribati,No,No,No,No,No,No,No,No,Missing,Missing
+Kuwait,No,No,No,No,No,No,Missing,No,No,Missing
+Kyrgyzstan,Yes,Yes,Yes,No,No,No,No,No,Missing,5
+LaoNoDemocratic Republic,Yes,Yes,Yes,No,No,No,No,Yes,Missing,No
+Latvia,No,Yes,Yes,Yes,No,Yes,Yes,No,Missing,8
+Lebanon,Yes,Yes,Yes,No,No,No,No,Yes,Missing,2
+Lesotho,Yes,No,No,No,No,No,No,No,Missing,No
+Liberia,No,No,No,No,No,No,No,No,Missing,Missing
+LibyanNoJamahiriya,Yes,Yes,Yes,Yes,Yes,Yes,Missing,Yes,Yes,3
+Lithuania,Yes,Yes,Yes,No,No,Yes,Yes,No,Missing,8
+Luxembourg,No,Yes,Yes,Yes,No,No,No,No,Missing,No
+Madagascar,No,No,No,No,No,No,No,No,Missing,Missing
+Malawi,No,No,No,No,No,No,No,No,Missing,Missing
+Malaysia,No,No,No,No,No,No,No,No,Missing,Missing
+Maldives,Yes,Yes,Yes,Yes,Yes,Yes,Missing,Yes,Yes,No
+Mali,No,No,No,No,No,No,No,No,Missing,Missing
+Malta,Yes,Yes,Yes,Yes,Yes,Yes,Yes,Yes,No,5
+Marshall Islands,Yes,Yes,Yes,Yes,Yes,Yes,Yes,Yes,Yes,No
+Mauritania,Yes,No,No,No,No,No,No,No,Missing,2
+Mauritius,Yes,Yes,Yes,Yes,No,Yes,Yes,Yes,Missing,5
+Mexico,No,Yes,No,No,No,No,No,Yes,Missing,4
+MicronesiaNoStates of),No,No,No,No,No,No,No,No,Missing,Missing
+Monaco,No,Yes,Yes,No,No,No,No,No,Missing,8
+Mongolia,No,No,No,No,No,No,No,Yes,Missing,3
+Montenegro,Yes,Yes,Yes,Yes,No,No,No,No,Missing,4
+Morocco,Yes,Yes,Yes,Yes,Yes,No,No,No,Missing,No
+Mozambique,No,No,No,No,No,No,No,No,Missing,Missing
+Myanmar,Yes,Yes,Yes,No,No,No,No,No,Missing,2
+Namibia,Yes,Yes,Yes,Yes,Yes,Yes,Yes,Yes,Yes,No
+Nauru,Yes,Yes,Yes,Yes,Yes,Yes,Yes,Yes,No,No
+Nepal,Yes,Yes,Yes,Yes,No,No,No,Yes,Missing,5
+Netherlands,Yes,Yes,Yes,No,No,No,No,No,Missing,8
+New Zealand,Yes,Yes,Yes,Yes,Yes,Yes,Yes,Yes,No,7
+Nicaragua,Yes,Yes,Yes,Yes,Yes,No,No,Yes,Missing,No
+Niger,Yes,Yes,Yes,No,No,No,No,Yes,No,3
+Nigeria,Yes,Yes,No,Yes,Yes,No,No,Yes,Missing,7
+Niue,No,No,No,No,No,No,No,No,Missing,Missing
+Norway,No,Yes,No,No,No,Yes,Yes,Yes,Missing,10
+Oman,No,No,No,No,No,No,No,No,Missing,Missing
+Pakistan,Yes,Yes,Yes,Yes,Yes,Yes,Missing,Yes,Yes,1
+Palau,No,No,No,Yes,No,No,No,No,Missing,8
+Panama,Yes,Yes,Yes,Yes,Yes,Yes,Yes,Yes,Yes,9
+PapuaNoGuinea,No,No,No,No,No,No,No,No,Missing,Missing
+Paraguay,Yes,Yes,No,No,No,No,No,No,Missing,10
+Peru,Yes,Yes,Yes,Yes,Yes,Yes,Yes,Yes,Yes,No
+Philippines,Yes,Yes,Yes,Yes,No,No,No,Yes,Missing,4
+Poland,No,No,No,No,No,No,No,Yes,Missing,2
+Portugal,Yes,Yes,No,No,No,No,No,Yes,Missing,No
+Qatar,No,No,No,No,No,No,No,No,Missing,Missing
+RepublicNoKorea,Yes,Yes,No,No,No,No,No,No,Missing,5
+RepublicNoMoldova,Yes,Yes,Yes,No,No,No,No,Yes,Missing,3
+Romania,Yes,No,No,No,No,No,No,No,Missing,5
+Russian Federation,No,No,No,No,No,No,No,No,Missing,Missing
+Rwanda,No,No,No,No,No,No,No,No,Missing,Missing
+SaintNoand Nevis,No,No,No,No,No,No,No,No,Missing,Missing
+Saint Lucia,No,No,No,No,No,No,No,No,Missing,Missing
+SaintNoandNoGrenadines,No,No,No,No,No,No,No,No,Missing,Missing
+Samoa,Yes,Yes,Yes,Yes,No,No,No,Yes,Missing,5
+San Marino,Yes,Yes,Yes,Yes,No,No,No,Yes,Missing,10
+SaoNoand Principe,No,No,No,No,No,No,No,No,Missing,Missing
+Saudi Arabia,Yes,Yes,Yes,Yes,No,No,Missing,No,Missing,No
+Senegal,Yes,No,No,No,No,No,No,No,Missing,0
+Serbia,Yes,Yes,Yes,Yes,No,No,No,Yes,Missing,10
+Seychelles,Yes,Yes,Yes,Yes,Yes,Yes,Yes,Yes,Yes,10
+Sierra Leone,No,No,No,No,No,No,No,No,Missing,Missing
+Singapore,Yes,Yes,No,No,No,Yes,No,Yes,Missing,8
+Slovakia,Yes,Yes,Yes,Yes,Yes,No,No,Yes,Missing,5
+Slovenia,Yes,Yes,Yes,No,No,No,No,No,No,7
+Solomon Islands,Yes,Yes,Yes,No,No,No,No,Yes,Missing,No
+Somalia,No,No,No,Yes,Yes,No,No,No,Missing,4
+South Africa,Yes,Yes,Yes,No,No,No,No,No,Missing,8
+Spain,Yes,Yes,Yes,Yes,Yes,Yes,Yes,Yes,Yes,8
+Sri Lanka,Yes,Yes,Yes,Yes,Yes,No,No,Yes,No,5
+Sudan,No,No,No,No,No,No,Missing,No,Missing,Missing
+Suriname,No,No,No,No,No,No,No,No,Missing,Missing
+Swaziland,No,No,No,No,No,No,No,No,Missing,Missing
+Sweden,No,No,No,No,No,No,No,No,Missing,Missing
+Switzerland,No,No,No,No,No,No,No,No,Missing,Missing
+SyrianNoRepublic,Yes,Yes,Yes,No,No,Yes,Yes,Yes,Missing,5
+Tajikistan,Yes,Yes,Yes,Yes,Yes,No,No,Yes,Missing,5
+Thailand,Yes,Yes,Yes,Yes,Yes,Yes,Yes,Yes,No,8
+TheNoYugoslavNoof Macedonia,Yes,Yes,Yes,Yes,No,Yes,Yes,Yes,Missing,7
+Timor-Leste,Yes,No,No,No,No,No,No,No,Missing,5
+Togo,No,No,No,No,No,No,No,No,Missing,Missing
+Tonga,No,No,No,Yes,Yes,No,No,No,Missing,No
+TrinidadNoTobago,Yes,Yes,Yes,Yes,Yes,Yes,Yes,Yes,Yes,7
+Tunisia,No,No,No,No,No,No,No,No,Missing,Missing
+Turkey,Yes,Yes,Yes,Yes,Yes,Yes,Yes,Yes,No,8
+Turkmenistan,Yes,Yes,Yes,Yes,Yes,Yes,Yes,Yes,Yes,10
+Tuvalu,No,No,No,Yes,No,Yes,Yes,Yes,Missing,5
+Uganda,Yes,Yes,Yes,Yes,Yes,No,No,No,No,6
+Ukraine,Yes,Yes,Yes,No,No,No,No,Yes,Missing,5
+UnitedNoEmirates,Yes,Yes,Yes,No,No,No,No,No,Missing,7
+UnitedNoofNoBritainNoNorthern Ireland,Yes,Yes,Yes,Yes,Yes,Yes,Yes,Yes,No,10
+UnitedNoof Tanzania,No,No,No,No,No,No,No,No,Missing,Missing
+UnitedNoof America,No,No,No,Yes,No,No,No,No,Missing,No
+Uruguay,Yes,Yes,Yes,Yes,Yes,Yes,Yes,Yes,Yes,10
+Uzbekistan,Yes,No,No,No,No,No,No,No,Missing,5
+Vanuatu,No,No,No,No,No,No,No,No,Missing,Missing
+VenezuelaNoRepublic of),Yes,Yes,No,No,No,No,No,Yes,Missing,9
+Viet Nam,Yes,Yes,Yes,Yes,Yes,No,No,Yes,Missing,3
+WestNoandNoStrip,Yes,Yes,Yes,Yes,No,Yes,No,Yes,Missing,9
+Yemen,No,No,No,No,No,No,No,No,Missing,Missing
+Zambia,Yes,Yes,Yes,Yes,No,Yes,Yes,Yes,Yes,3
+Zimbabwe,Yes,Yes,No,No,No,No,No,Yes,Missing,2

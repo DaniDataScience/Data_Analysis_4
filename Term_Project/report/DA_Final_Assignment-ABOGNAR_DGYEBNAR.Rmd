@@ -1,0 +1,503 @@
+---
+title: "DA Final Assignment - Smoke Free Laws and Lung Cancer"
+author: "A. BOGNAR , D. GYEBNAR"
+date: "4/18/2022"
+output: pdf_document
+---
+
+```{r setup, include=FALSE}
+library(tidyverse)
+library(data.table)
+library(stringr)
+library(kableExtra)
+library(fixest)
+library(estimatr)
+library(huxtable)
+library(data.table)
+```
+```{r setup II, include=FALSE, eval=TRUE, out.width="65%"}
+knitr::opts_chunk$set(echo = FALSE, warning = FALSE, message = FALSE)
+```
+
+A technical note: the code and data can also be found in [this Github repo](https://github.com/BognarAndras/da4_assignment2).
+
+
+## 1. Data
+
+
+```{r data load, echo=FALSE}
+# Load data
+
+wide_bin_6_years <- read_csv("bin_wide_to14.csv")
+wide_bin_4_years <- read_csv("bin_wide_to16.csv")
+diff_in_diff_6_years_after <- read_csv("bin_diff_in_diff_to14.csv")
+diff_in_diff_4_years_after <- read_csv("bin_diff_in_diff_to16.csv")
+fd_6_year_avg_6_after <- read_csv("bin_long_fd_to14.csv")
+fd_6_year_avg_4_after <- read_csv("bin_long_fd_to16.csv")
+
+quant_wide <- read_csv("quant_wide.csv")
+quant_long <- read_csv("quant_long.csv")
+
+control_vars <- read_csv("control_vars.csv")
+
+```
+## 2. Binary Intervention
+
+```{r cross section 6 years, echo=FALSE}
+
+# Simple OLS 20 years before intervention
+
+causal_var_one <- "treated" 
+outcome_var_one <- "case_per_t.pre20"
+
+formula1 <- as.formula(paste0(outcome_var_one, " ~ ",causal_var_one))
+cross_section_t20 <- feols( formula1, data=wide_bin_6_years , 
+               vcov = "hetero")
+
+# Simple OLS in year of intervention
+
+outcome_var_two <- "case_per_t.0"
+
+formula2 <- as.formula(paste0(outcome_var_two, " ~ ",causal_var_one))
+cross_section_t0 <- feols( formula2, data=wide_bin_6_years , 
+                             vcov = "hetero")
+
+# Simple OLS 6 years after intervention
+
+outcome_var_three <- "case_per_t.6"
+
+formula3 <- as.formula(paste0(outcome_var_three, " ~ ",causal_var_one))
+cross_section_l6 <- feols( formula3, data=wide_bin_6_years , 
+                             vcov = "hetero")
+```
+
+### A. Simple OLS
+
+**Model 1** is for 20 years before intervention. Treatment group interventions between 2010 and 14. Control Group base year was chosen as 2012.
+**Model 2** is for year of intervention. Same groups.
+**Model 3** is for 6 years after intervention. Same groups.
+
+In the annex same calculation with interventions betwen 2010 and 2016, very similar result.
+
+```{r cross section table 6 years}
+
+varname_report <- c("(Intercept)" = "Untreated",
+                    "treated" 
+                    = "Treated")
+
+style_noHeaders = style.tex(var.title = "", fixef.title = "", stats.title = " ")
+
+kable( etable( cross_section_t20 , cross_section_t0 , cross_section_l6,
+               dict = varname_report,
+               se.below = T,
+               coefstat = 'se',
+               fitstat = c('n','r2'),
+               se.row = F,
+               depvar = F,
+               digits = 3,
+               digits.stats = 3) , 
+       col.names = c('(1)','(2)','(3)'),
+       "latex", booktabs = TRUE, 
+       caption = 
+         'Simple Cross Sectional Regression') |>
+  kable_styling(latex_options = "hold_position", font_size = 12 )
+
+```
+
+
+```{r cross section 4 years, echo=FALSE}
+
+# Simple OLS 20 years before intervention
+
+
+formula4 <- as.formula(paste0(outcome_var_one, " ~ ",causal_var_one))
+cross_section_t20_4y <- feols( formula4, data=wide_bin_4_years , 
+               vcov = "hetero")
+
+# Simple OLS in year of intervention
+
+
+formula5 <- as.formula(paste0(outcome_var_two, " ~ ",causal_var_one))
+cross_section_t6_4y <- feols( formula5, data=wide_bin_4_years , 
+                             vcov = "hetero")
+
+# Simple OLS 6 years after intervention
+
+outcome_var_four <- "case_per_t.4"
+
+formula6 <- as.formula(paste0(outcome_var_four, " ~ ",causal_var_one))
+cross_section_l4 <- feols( formula6, data=wide_bin_4_years , 
+                             vcov = "hetero")
+```
+
+
+### B. Diff-in-diff
+
+The difference between treated and untreated countries in their differences 6 years prior and 6 years after the interventions. 
+
+```{r diff in diff, echo=FALSE}
+
+
+treated_before_mean <- mean((diff_in_diff_6_years_after |> filter(treated == 1 & year_num == -6))$case_per_t)
+untreated_before_mean <- mean((diff_in_diff_6_years_after |> filter(treated == 0  & year_num == -6))$case_per_t)
+treated_after_mean <- mean((diff_in_diff_6_years_after |> filter(treated == 1 & year_num == 6))$case_per_t)
+untreated_after_mean <- mean((diff_in_diff_6_years_after |> filter(treated == 0 & year_num == 6))$case_per_t)
+
+treat_diff <- (treated_before_mean - treated_after_mean)
+untreat_diff <- (untreated_before_mean - untreated_after_mean)
+diff_in_diff <-  untreat_diff - treat_diff
+before_diff <- untreated_before_mean - treated_before_mean
+after_diff <- untreated_after_mean - treated_after_mean 
+
+diff_in_diff_table <- tibble(group = c("untreated","treated","total"),
+       before = c(untreated_before_mean,treated_before_mean, before_diff) , 
+       after = c(untreated_after_mean,treated_after_mean, after_diff) , 
+       group_diff = c(untreat_diff,treat_diff,diff_in_diff))
+
+
+treated_before_mean <- mean((diff_in_diff_4_years_after |> filter(treated == 1 & year_num == -6))$case_per_t)
+untreated_before_mean <- mean((diff_in_diff_4_years_after |> filter(treated == 0  & year_num == -6))$case_per_t)
+treated_after_mean <- mean((diff_in_diff_4_years_after |> filter(treated == 1 & year_num == 4))$case_per_t)
+untreated_after_mean <- mean((diff_in_diff_4_years_after |> filter(treated == 0 & year_num == 4))$case_per_t)
+
+treat_diff <- (treated_before_mean - treated_after_mean)
+untreat_diff <- (untreated_before_mean - untreated_after_mean)
+diff_in_diff <-  untreat_diff - treat_diff
+before_diff <- untreated_before_mean - treated_before_mean
+after_diff <- untreated_after_mean - treated_after_mean 
+
+diff_in_diff_table_4 <- tibble(group = c("untreated","treated","total"),
+       before = c(untreated_before_mean,treated_before_mean, before_diff) , 
+       after = c(untreated_after_mean,treated_after_mean, after_diff) , 
+       group_diff = c(untreat_diff,treat_diff,diff_in_diff))
+
+# diff_in_diff_6 <- lm(d_case_per_t ~ treated, data = diff_in_diff_6_years_after, vcov = "hetero")
+
+diff_in_diff_6 <- feols( d_case_per_t ~ treated, data=diff_in_diff_6_years_after , 
+                             vcov = "hetero")
+# diff_in_diff_4 <- lm(d_case_per_t ~ treated, data = diff_in_diff_4_years_after, vcov = "hetero")
+diff_in_diff_4 <- feols( d_case_per_t ~ treated, data=diff_in_diff_4_years_after , 
+                             vcov = "hetero")
+
+diff_in_diff_table$after <- format(diff_in_diff_table$after,digits=3,nsmall = 0)
+diff_in_diff_table$before <- format(diff_in_diff_table$before,digits=3,nsmall = 0)
+diff_in_diff_table$group_diff <- format(diff_in_diff_table$group_diff,digits=3,nsmall = 0)
+
+diff_in_diff_table_4$after <- format(diff_in_diff_table_4$after,digits=3,nsmall = 0)
+diff_in_diff_table_4$before <- format(diff_in_diff_table_4$before,digits=3,nsmall = 0)
+diff_in_diff_table_4$group_diff <- format(diff_in_diff_table_4$group_diff,digits=3,nsmall = 0)
+
+```
+Table and regression show same result.
+
+```{r diff in diff table 6}
+
+
+
+kable(format(as.data.frame(diff_in_diff_table)),  
+      align=rep('c', 4) ) |> kable_styling(latex_options = "hold_position",
+                                     font_size = 12 )
+```
+
+```{r diff in diff reg 6}
+
+kable( etable( diff_in_diff_6,
+               dict = varname_report,
+               se.below = T,
+               coefstat = 'se',
+               fitstat = c('n','r2'),
+               se.row = F,
+               depvar = F,
+               digits = 3,
+               digits.stats = 3) , 
+       col.names = c('(1)'),
+       "latex", booktabs = TRUE, 
+       caption = 
+         'Diff-in-diff') |>
+  kable_styling(latex_options = "hold_position", font_size = 12 )
+```
+
+### C. Long differenc model
+
+First difference between the avg. of yearly changes in the 6 years prior to the intervention compared to the change seen 6 years after the intervention. 
+
+```{r long first diff, echo=FALSE}
+
+longdiff_model_6y <- lm_robust(d_over_6_years ~ treated,
+                      data = fd_6_year_avg_6_after, 
+                      se_type = "stata", 
+                      clusters = name)
+
+longdiff_model_4y <- lm_robust(d_over_4_years ~ treated,
+                      data = fd_6_year_avg_4_after, 
+                      se_type = "stata", 
+                      clusters = name)
+
+```
+```{r huxtable longdiff 6}
+huxreg(longdiff_model_6y, number_format = 3,
+             coefs = c("Untreated"="(Intercept)",
+                       "Treated"="treated"
+             ),
+             statistics = c(N = "nobs", R2 = "r.squared")
+)
+```
+## 3. Quantitative Causal Variable
+
+### A. Simple OLS
+
+
+**Model 1** shows association between number of places with banned indoor smoking and lung cancer rate of country in 2008. 
+**Model 2** is same for 2016.
+**Model 3** is same for 2020.
+
+
+```{r quant reg, echo=FALSE}
+
+names(quant_wide) <- c(names(quant_wide)[1] , paste0("year_" , names(quant_wide)[2:8]) , 
+                                                     names(quant_wide)[9:15]) 
+
+# Simple OLS in 2008
+
+causal_var_two <- "year_2008" 
+outcome_var_five <- "case_per_t_2008"
+
+formula7 <- as.formula(paste0(outcome_var_five, " ~ ",causal_var_two))
+cross_section_2008 <- feols( formula7, data=quant_wide , 
+               vcov = "hetero")
+
+# Simple OLS in 2016
+
+causal_var_three <- "year_2016" 
+outcome_var_six <- "case_per_t_2016"
+
+formula8 <- as.formula(paste0(outcome_var_six, " ~ ",causal_var_three))
+cross_section_2016 <- feols( formula8, data=quant_wide , 
+               vcov = "hetero")
+
+# Simple OLS in 2019
+
+causal_var_four <- "year_2020" 
+outcome_var_seven <- "case_per_t_2020"
+
+formula9 <- as.formula(paste0(outcome_var_seven, " ~ ",causal_var_four))
+cross_section_2020 <- feols( formula9, data=quant_wide , 
+               vcov = "hetero")
+
+```
+
+```{r cross section quant}
+
+varname_report_quant <- c("(Intercept)" = "Intercept",
+                    "year_2008" 
+                    = "Number of banned places 2008",
+                    "year_2016" 
+                    = "Number of banned places 2016",
+                    "year_2020" 
+                    = "Number of banned places 2020")
+
+kable( etable( cross_section_2008 , cross_section_2016 , cross_section_2020,
+               dict = varname_report_quant,
+               se.below = T,
+               coefstat = 'se',
+               fitstat = c('n','r2'),
+               se.row = F,
+               depvar = F,
+               digits = 3,
+               digits.stats = 3) , 
+       col.names = c('(1)','(2)','(3)'),
+       "latex", booktabs = TRUE, 
+       caption = 
+         'Simple Cross Sectional Regression') |>
+  kable_styling(latex_options = "hold_position", font_size = 12 )
+
+```
+\newpage
+
+### B. Fixed Effect
+
+```{r quant fe fd, echo=FALSE}
+
+
+fe_model <- lm_robust(case_per_t ~ policy_num + Year,
+                   data = quant_long, 
+                   se_type = "stata", 
+                   fixed_effect =  ~ COUNTRY ,
+                   clusters = COUNTRY)
+
+quant_long <- quant_long |> 
+  group_by(COUNTRY) |> 
+  mutate(
+    d_policy_num_t  = policy_num - lag(policy_num ),
+    d_policy_num_t2  = lag(policy_num ) - lag(policy_num , 2),
+    d_policy_num_t3  = lag(policy_num , 2) - lag(policy_num , 3),
+    d_policy_num_t4  = lag(policy_num , 3) - lag(policy_num , 4),
+    d_policy_num_t5  = lag(policy_num , 4) - lag(policy_num , 5),
+    d_policy_num_t6  = lag(policy_num , 5) - lag(policy_num , 6)
+  ) |> 
+  ungroup()
+
+
+fd_model <- lm_robust(d_case_per_t ~ d_policy_num_t,
+                   data = quant_long, 
+                   se_type = "stata", 
+                   clusters = COUNTRY)
+
+# Add 2 lags
+
+
+lags_text <- paste(c("d_policy_num_t", paste0("d_policy_num_t", c(2:3))), collapse = " + ")
+fd_2_lag_formula <- as.formula(paste0("d_case_per_t ~ ", lags_text))
+
+fd_2_lag_model <- lm_robust(fd_2_lag_formula,
+                     data = quant_long, 
+                     se_type = "stata", 
+                     clusters = COUNTRY
+)
+
+# Add 6 lags
+
+
+lags_text <- paste(c("d_policy_num_t", paste0("d_policy_num_t", c(2:6))), collapse = " + ")
+fd_6_lag_formula <- as.formula(paste0("d_case_per_t ~ ", lags_text))
+
+fd_6_lag_model <- lm_robust(fd_6_lag_formula,
+                     data = quant_long, 
+                     se_type = "stata", 
+                     clusters = COUNTRY
+)
+
+
+
+quant_long <-  left_join(quant_long , control_vars , by = c ("COUNTRY" = "Country", "Year" = "Time"))
+
+fd_6_lag_control_formula <- as.formula(paste0("d_case_per_t ~ ", paste(c(lags_text,
+                                            "gdp_pc","health_exp","life_exp" ), collapse = " + ")))
+
+fd_6_lag_control_model <- lm_robust(fd_6_lag_control_formula,
+                     data = quant_long, 
+                     se_type = "stata", 
+                     clusters = COUNTRY
+)
+
+```
+
+```{r quant fe}
+huxreg(fe_model, number_format = 3,
+             coefs = c("Number of places"="policy_num",
+                       "Year"="Year"
+             ),
+             statistics = c(N = "nobs", R2 = "r.squared")
+)
+```
+
+\newpage
+
+### C. First diffrenc, with 2 and 6 year lags.
+
+```{r quant fd}
+huxreg(fd_model, fd_2_lag_model, fd_6_lag_model, number_format = c(3,3,3),
+             coefs = c("Intercept"="(Intercept)",
+                       "Cont Diff of number of bans"="d_policy_num_t",
+                       "1st Lag of Diff number of bans"="d_policy_num_t2", 
+                       "2nd Lag of Diff number of bans"="d_policy_num_t3",
+                       "3rd Lag of Diff number of bans"="d_policy_num_t4", 
+                       "4th Lag of Diff number of bans"="d_policy_num_t5",
+                       "5th Lag of Diff number of bans"="d_policy_num_t6"
+             ),
+             statistics = c(N = "nobs", R2 = "r.squared")
+)
+```
+\newpage
+
+### D. Controls
+
+```{r quant fd control }
+hux_cont <- huxreg(fd_6_lag_control_model, number_format = 3,
+             coefs = c("Intercept"="(Intercept)",
+                       "Cont Diff of number of bans"="d_policy_num_t",
+                       "1st Lag of Diff number of bans"="d_policy_num_t2", 
+                       "2nd Lag of Diff number of bans"="d_policy_num_t3",
+                       "3rd Lag of Diff number of bans"="d_policy_num_t4", 
+                       "4th Lag of Diff number of bans"="d_policy_num_t5",
+                       "5th Lag of Diff number of bans"="d_policy_num_t6",
+                       "GDP Per capita" ="gdp_pc",
+                       "Health Expenditure of government"="health_exp",
+                       "Life Expectancy"="life_exp"
+             ),
+             statistics = c(N = "nobs", R2 = "r.squared") 
+)
+huxtable::font_size(hux_cont) <- 10
+
+huxtable::height(hux_cont) <- 1
+huxtable::width(hux_cont) <- 0.75
+hux_cont <- set_all_padding(hux_cont,,, 2)
+hux_cont
+```
+
+\newpage
+
+## Annex
+
+### 1. Four year intervention period OLS
+
+```{r cross section table 4 yearsó}
+
+kable( etable( cross_section_t20_4y , cross_section_t6_4y , cross_section_l4,
+               dict = varname_report,
+               se.below = T,
+               coefstat = 'se',
+               fitstat = c('n','r2'),
+               se.row = F,
+               depvar = F,
+               digits = 3,
+               digits.stats = 3) , 
+       col.names = c('(1)','(2)','(3)'),
+       "latex", booktabs = TRUE, 
+       caption = 
+         'Simple Cross Sectional Regression') |>
+  kable_styling(latex_options = "hold_position", font_size = 12 )
+
+```
+
+### Diff-in-diff
+
+```{r diff in diff table 4}
+
+
+
+kable(format(as.data.frame(diff_in_diff_table_4)),  
+      align=rep('c', 4) ) |> kable_styling(latex_options = "hold_position",
+                                     font_size = 12 )
+```
+
+```{r diff in diff reg 4}
+
+kable( etable( diff_in_diff_4,
+               dict = varname_report,
+               se.below = T,
+               coefstat = 'se',
+               fitstat = c('n','r2'),
+               se.row = F,
+               depvar = F,
+               digits = 3,
+               digits.stats = 3) , 
+       col.names = c('(1)'),
+       "latex", booktabs = TRUE, 
+       caption = 
+         'Diff-in-diff') |>
+  kable_styling(latex_options = "hold_position", font_size = 12 )
+```
+
+\newpage 
+
+### Long diff
+
+```{r huxtable longdiff 4}
+huxreg(longdiff_model_4y, number_format = 3,
+             coefs = c("Untreated"="(Intercept)",
+                       "Treated"="treated"
+             ),
+             statistics = c(N = "nobs", R2 = "r.squared")
+)
+```
